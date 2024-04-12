@@ -31,3 +31,17 @@ def google_login(request):
     return Response(response)
 
   return Response(status=200)
+
+
+@api_view(['POST'])
+def refresh_token(request):
+    refresh_token = request.data.get('refresh_token')
+    if refresh_token:
+      try:
+        token = RefreshToken(refresh_token)
+        access_token = str(token.access_token)
+        return Response({'access_token': access_token}, status=200)
+      except TokenError as e:
+        return Response({'error': 'Invalid or expired refresh token'}, status=401)
+    else:
+      return Response({'error': 'Refresh token is required'}, status=400)
